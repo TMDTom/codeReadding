@@ -1,0 +1,49 @@
+训练步骤：
+都是操作的两个域，举例子就举一个方向的即可。
+首先训练DD（Diffusion Discriminator)，固定生成器
+    1.真实数据
+        根据真实数据A生成正向采样的XAt,XAt+1。
+        通过DD来鉴别这个两个真实的（XAt,t,XAt+1)
+        期望这个值越大越好。所以加了负号。
+    2.假数据
+        通过NDG（NonDiffusionGenerator)来生成真实A,B对应的另外一个域的数据
+        然后通过DG生成XA0   传入（真实的XAt，预测的XB（源域），t1,潜在变量）
+        然后通过(预测的XA0，真实XAt+1，t1)来预测XAt.
+        通过DD来判断假的（预测的XAt,t1,真实的XAt+1)
+        期待这个值越小越好。
+现在就对DD参数进行更新。
+
+然后训练NND(NonDiffusionDiscriminator),固定生成器
+    1.真实数据
+        通过NND来鉴别真实的A,B数据。 disc_non_diffusive_cycle1(real_data1)
+    2.假数据
+        通过NNG来生成B对应的A域数据。x1_0_predict = gen_non_diffusive_2to1(real_data2)
+        通过NND来鉴别假的A,B数据。
+        值越小越好。
+
+接下来对生成器进行训练，固定鉴别器。
+    通过真实的A生成真实的XAt,XAt+1。           x1_t, x1_tp1 = q_sample_pairs(coeff, real_data1, t1)
+    通过NDG将B预测到A，再把A预测回B。
+    通过DG（真实的XAt+1,预测B，t1,潜在变量z1)生成预测的XA。
+    通过预测的XA,真实的XAt+1采样得到XAt.
+    通过DD来鉴别假的（采样的XAt,t1, 真实的XAt+1)  但是生成器希望这个生成的数据接近真实的，所以越大越好。
+
+    通过NDG将B预测到A的图片通过NND进行辨别。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
