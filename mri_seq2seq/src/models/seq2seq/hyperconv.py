@@ -6,7 +6,7 @@ import torch.nn.functional as F
 class hyperConv(nn.Module):
     def __init__(
         self,
-        style_dim,
+        style_dim, # 样式信息维度
         dim_in,
         dim_out,
         ksize,
